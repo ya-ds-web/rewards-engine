@@ -1,0 +1,52 @@
+plugins {
+    id 'org.springframework.boot' version '2.6.4'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'org.liquibase.gradle' version '2.1.1'
+    id 'java'
+}
+
+group = 'com.yaweb'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '17'
+
+configurations {
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+ext {
+
+    set('springCloudVersion', "2021.0.1")
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web-services'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+//    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.apache.kafka:kafka-streams'
+//    implementation 'org.springframework.cloud:spring-cloud-starter-config'
+//    implementation 'org.springframework.cloud:spring-cloud-starter-netflix-eureka-client'
+    implementation 'org.springframework.kafka:spring-kafka'
+    implementation 'org.liquibase:liquibase-core:4.8.0'
+    implementation 'org.liquibase:liquibase-gradle-plugin:2.1.1'
+    developmentOnly 'org.springframework.boot:spring-boot-devtools:2.6.4'
+//    runtimeOnly 'com.oracle.database.jdbc:ojdbc8:21.5.0.0'
+    annotationProcessor 'org.springframework.boot:spring-boot-configuration-processor:2.6.4'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test:2.6.4'
+    testImplementation 'org.springframework.kafka:spring-kafka-test:2.8.3'
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}

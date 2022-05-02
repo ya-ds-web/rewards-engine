@@ -1,0 +1,30 @@
+{
+  "tableName": "payments",
+  "operationType": "u",
+  "before": {
+    "id": 1,
+    "billId": 2,
+    "userId": 3,
+    "insertionTime": 1651312979,
+    "receiverId": 4,
+    "amount": 5.5,
+    "taxAmount": 0.5,
+    "type": "IP",
+    "status": "2",
+    "amountCurrency": "USD",
+    "taxAmountCurrency": "USD"
+  },
+  "after": {
+    "id": 1,
+    "billId": 2,
+    "userId": 3,
+    "insertionTime": 1651312979,
+    "receiverId": 4,
+    "amount": 5.5,
+    "taxAmount": 0.5,
+    "type": "IP",
+    "status": "3",
+    "amountCurrency": "USD",
+    "taxAmountCurrency": "USD"
+  }
+}
