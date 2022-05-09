@@ -9,6 +9,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record User(
     long id,
+    long inserted,
     boolean isSpecial,
     String mail
 ) {

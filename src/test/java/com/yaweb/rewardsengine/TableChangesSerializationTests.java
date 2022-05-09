@@ -1,12 +1,9 @@
 package com.yaweb.rewardsengine;
 
 import static com.yaweb.rewardsengine.exceptions.ExceptionMessagesStringsFormats.MESSAGE_TO_TABLECHANGE_DESERIALIZATION_EXCEPTION;
-import static com.yaweb.rewardsengine.exceptions.ExceptionMessagesStringsFormats.MISSING_DESERIALIZATION_CONFIG;
-import static com.yaweb.rewardsengine.exceptions.ExceptionMessagesStringsFormats.MISSING_PARAMETRIC_TYPE;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 
 import com.fasterxml.jackson.databind.JavaType;
@@ -32,12 +29,11 @@ class TableChangesSerializationTests {
 
   byte[] messageBytes;
 
-  TableChangeDeserializer deserializer = new TableChangeDeserializer();
+  TableChangeDeserializer deserializer = new TableChangeDeserializer(Payment.class);
   TableChangeSerializer serializer = new TableChangeSerializer();
 
   @BeforeEach
   void setUp() throws IOException {
-    deserializer.configure(Payment.class);
     InputStream is = getClass().getClassLoader().getResourceAsStream("PaymentsTableMessageSample.json");
     messageBytes = is.readAllBytes();
   }
@@ -59,23 +55,10 @@ class TableChangesSerializationTests {
   }
 
   @Test
-  void deserializationExceptionMissingConfiguration() {
-    var newDeserializer = new TableChangeDeserializer<>();
-    var thrown = Assertions.assertThrows(DeserializationException.class, () -> {
-      newDeserializer.deserialize("test", null);
-    });
-
-    assertTrue(thrown.getMessage().contains(MISSING_DESERIALIZATION_CONFIG) &&
-            thrown.getMessage().contains(MISSING_PARAMETRIC_TYPE)
-        , "Incorrect exception was thrown for not configured deserializer!");
-  }
-
-  @Test
   void deserializationExceptionUnableToCreateObject() throws IOException {
-    var newDeserializer = new TableChangeDeserializer<Payment>();
+    var newDeserializer = new TableChangeDeserializer<>(Payment.class);
     var objectMapperMock = Mockito.mock(ObjectMapper.class);
     Mockito.when(objectMapperMock.readValue(any(byte[].class), any(JavaType.class))).thenThrow(new IOException());
-    newDeserializer.configure(Payment.class);
     ReflectionTestUtils.setField(newDeserializer, "mapper", objectMapperMock);
     var thrown = Assertions.assertThrows(DeserializationException.class, () ->
         newDeserializer.deserialize("test", messageBytes));

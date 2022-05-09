@@ -8,16 +8,17 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public record Payment(
-    long id,
-    long billId,
-    long userId,
-    long insertionTime,
-    long receiverId,
-    double amount,
-    double taxAmount,
+    Long id,
+    Long billId,
+    Long userId,
+    Long insertionTime,
+    Long receiverId,
+    Double amount,
+    Double taxAmount,
     String type,
     String status,
     String amountCurrency,
-    String taxAmountCurrency
+    String taxAmountCurrency,
+    Boolean isFirst
 ) {
 }

@@ -3,6 +3,7 @@ package com.yaweb.rewardsengine.models.rewardable;
 import com.yaweb.rewardsengine.interfaces.Event;
 import com.yaweb.rewardsengine.interfaces.Rewardable;
 import com.yaweb.rewardsengine.interfaces.RewardsContainer;
+import com.yaweb.rewardsengine.models.Reward;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public class RewardableEvent implements Rewardable, Event {
   private List<RewardsContainer> rewardsContainers;
 
   @Override
-  public List toRewards() {
+  public List<Reward> toRewards() {
     return null;
   }
 

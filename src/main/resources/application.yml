@@ -5,3 +5,6 @@ spring:
     bootstrap-servers: 192.168.1.158:9092
     streams:
       auto-startup: true
+      properties:
+        payments-table-changes-topic: payments
+        users-table-changes-topic: users

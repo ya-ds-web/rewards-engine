@@ -1,8 +1,6 @@
 package com.yaweb.rewardsengine.serialization;
 
 import static com.yaweb.rewardsengine.exceptions.ExceptionMessagesStringsFormats.MESSAGE_TO_TABLECHANGE_DESERIALIZATION_EXCEPTION;
-import static com.yaweb.rewardsengine.exceptions.ExceptionMessagesStringsFormats.MISSING_DESERIALIZATION_CONFIG;
-import static com.yaweb.rewardsengine.exceptions.ExceptionMessagesStringsFormats.MISSING_PARAMETRIC_TYPE;
 
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -16,18 +14,14 @@ import java.io.IOException;
 public class TableChangeDeserializer<T> implements Deserializer<TableChange<T>> {
 
   private final ObjectMapper mapper = new ObjectMapper();
-  private JavaType type;
+  private final JavaType type;
 
-  public void configure(Class<T> contentClass) {
+  public TableChangeDeserializer(Class<T> contentClass) {
     type = mapper.getTypeFactory().constructParametricType(TableChange.class, contentClass);
   }
 
   @Override
   public TableChange<T> deserialize(String topic, byte[] data) {
-    if (type == null) {
-      throw new DeserializationException(MISSING_DESERIALIZATION_CONFIG, data, false,
-          new Exception(MISSING_PARAMETRIC_TYPE));
-    }
     if (data == null) {
       return null;
     }

@@ -1,15 +1,11 @@
 package com.yaweb.rewardsengine.processors;
 
-import com.yaweb.rewardsengine.models.TableChange;
-import com.yaweb.rewardsengine.models.rewardable.Payment;
-import com.yaweb.rewardsengine.serialization.TableChangeDeserializer;
-import com.yaweb.rewardsengine.serialization.TableChangeSerializer;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
-import org.apache.kafka.streams.kstream.Consumed;
-import org.apache.kafka.streams.kstream.KStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -21,17 +17,37 @@ public class CampaignProcessor {
   //    new MessageDeserializer());
 
   @Autowired
-  void buildPipeline(StreamsBuilder streamsBuilder) {
+  void buildPipeline(StreamsBuilder streamsBuilder, PaymentProcessor test, UserProcessor users) {
 
-    var paymentsTableChanges = new TableChangeDeserializer();
-    paymentsTableChanges.configure(Payment.class);
+    ObjectMapper mapper = new ObjectMapper();
 
-    Serde<TableChange<Payment>> paymentsSerde = Serdes.serdeFrom(new TableChangeSerializer(),
-        paymentsTableChanges);
+    test.getBills().peek((key, value) -> {
+      System.out.println("------------------" + key);
+      try {
+        System.out.println("-----------------" + mapper.writeValueAsString(value));
+      } catch (JsonProcessingException e) {
+        throw new RuntimeException(e);
+      }
+    });
 
-    KStream<String, TableChange<Payment>> messageStream = streamsBuilder
-        .stream("test", Consumed.with(STRING_SERDE, paymentsSerde));
-    messageStream.peek((key, value) -> System.out.println(value.before().type() + " ======"));
+    users.getUsers().toStream().peek((key, value) -> {
+      System.out.println("------------------" + key);
+      try {
+        System.out.println("-----------------" + mapper.writeValueAsString(value));
+      } catch (JsonProcessingException e) {
+        throw new RuntimeException(e);
+      }
+    });
+
+    //var paymentsTableChanges = new TableChangeDeserializer();
+    //paymentsTableChanges.configure(Payment.class);
+    //
+    //Serde<TableChange<Payment>> paymentsSerde = Serdes.serdeFrom(new TableChangeSerializer(),
+    //    paymentsTableChanges);
+    //
+    //KStream<String, TableChange<Payment>> messageStream = streamsBuilder
+    //    .stream("test", Consumed.with(STRING_SERDE, paymentsSerde));
+    //messageStream.peek((key, value) -> System.out.println(value.before().type() + " ======"));
     //messageStream.print(Printed.<String, TableChange<Payment>>toSysOut().withLabel("test"));
 
     //KStream<String, Message> messageStream = streamsBuilder
