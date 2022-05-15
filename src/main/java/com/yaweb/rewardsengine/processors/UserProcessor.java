@@ -1,5 +1,7 @@
 package com.yaweb.rewardsengine.processors;
 
+import com.yaweb.rewardsengine.interfaces.Actor;
+import com.yaweb.rewardsengine.interfaces.ActorsProcessor;
 import com.yaweb.rewardsengine.models.TableChange;
 import com.yaweb.rewardsengine.models.user.User;
 import com.yaweb.rewardsengine.serialization.GenericObjectDeserializer;
@@ -13,7 +15,7 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.Grouped;
 import org.apache.kafka.streams.kstream.KStream;
-import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.Repartitioned;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
 import org.springframework.stereotype.Component;
 
@@ -22,25 +24,29 @@ import org.springframework.stereotype.Component;
  */
 
 @Component
-public class UserProcessor {
+public class UserProcessor implements ActorsProcessor {
 
   private final KafkaProperties kafkaProperties;
   private final StreamsBuilder streamsBuilder;
   private final TableChangeSerializer<User> serializer = new TableChangeSerializer<>();
   private final GenericObjectSerializer<User> userSerializer = new GenericObjectSerializer<>();
+  private final GenericObjectSerializer<Actor> actorSerializer = new GenericObjectSerializer<>();
   private final TableChangeDeserializer<User> deserializer = new TableChangeDeserializer<>(User.class);
   private final GenericObjectDeserializer<User> userDeserializer = new GenericObjectDeserializer<>(User.class);
+  private final GenericObjectDeserializer<Actor> actorDeserializer = new GenericObjectDeserializer<>(User.class);
   private final Serde<TableChange<User>> userChangesSerde;
   private final Serde<User> userSerde;
+  private final Serde<Actor> actorSerde;
 
   public UserProcessor(KafkaProperties kafkaProperties, StreamsBuilder streamsBuilder) {
     this.kafkaProperties = kafkaProperties;
     this.streamsBuilder = streamsBuilder;
     this.userSerde = Serdes.serdeFrom(userSerializer, userDeserializer);
+    this.actorSerde = Serdes.serdeFrom(actorSerializer, actorDeserializer);
     this.userChangesSerde = Serdes.serdeFrom(serializer, deserializer);
   }
 
-  KTable<String, User> getUsers() {
+  public KStream<String, Actor> getStream() {
     KStream<String, TableChange<User>> stream = streamsBuilder.stream(
         kafkaProperties.getStreams().getProperties().get("users-table-changes-topic"),
         Consumed.with(Serdes.String(), userChangesSerde));
@@ -48,6 +54,7 @@ public class UserProcessor {
             value != null && value.after() != null)
         .mapValues(TableChange::after)
         .groupBy((key, value) -> String.valueOf(value.id()), Grouped.with(Serdes.String(), userSerde))
-        .reduce((value1, value2) -> value1.inserted() > value2.inserted() ? value1 : value2);
+        .reduce((value1, value2) -> value1.inserted() > value2.inserted() ? value1 : value2).mapValues(
+            (User value) -> ((Actor) value)).toStream().repartition(Repartitioned.with(Serdes.String(), actorSerde));
   }
 }

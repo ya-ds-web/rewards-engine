@@ -8,3 +8,5 @@ spring:
       properties:
         payments-table-changes-topic: payments
         users-table-changes-topic: users
+        campaign-topic: campaign
+        rewards-topic: rewards

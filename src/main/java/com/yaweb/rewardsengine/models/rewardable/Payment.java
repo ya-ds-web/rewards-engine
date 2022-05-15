@@ -1,6 +1,7 @@
 package com.yaweb.rewardsengine.models.rewardable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.yaweb.rewardsengine.interfaces.Action;
 
 /**
  * Created by ya-ds on April, 2022
@@ -20,5 +21,10 @@ public record Payment(
     String amountCurrency,
     String taxAmountCurrency,
     Boolean isFirst
-) {
+) implements Action {
+
+  @Override
+  public String getActorMappingKey() {
+    return null;
+  }
 }

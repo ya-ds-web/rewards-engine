@@ -6,7 +6,6 @@ package com.yaweb.rewardsengine.serialization;
 
 import static com.yaweb.rewardsengine.exceptions.ExceptionMessagesStringsFormats.MESSAGE_TO_OBJECT_DESERIALIZATION_EXCEPTION;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.apache.kafka.common.serialization.Deserializer;
@@ -19,7 +18,7 @@ public class GenericObjectDeserializer<T> implements Deserializer<T> {
   private final ObjectMapper mapper = new ObjectMapper();
   private final Class<T> clazz;
 
-  public GenericObjectDeserializer(Class<T> clazz) {
+  public GenericObjectDeserializer(Class clazz) {
     this.clazz = clazz;
   }
 
@@ -32,7 +31,7 @@ public class GenericObjectDeserializer<T> implements Deserializer<T> {
       return mapper.readValue(data, clazz);
     } catch (IOException e) {
       throw new DeserializationException(
-          String.format(MESSAGE_TO_OBJECT_DESERIALIZATION_EXCEPTION, TypeReference.class.getName()),
+          String.format(MESSAGE_TO_OBJECT_DESERIALIZATION_EXCEPTION, clazz.getName()),
           data, false, e);
     }
   }

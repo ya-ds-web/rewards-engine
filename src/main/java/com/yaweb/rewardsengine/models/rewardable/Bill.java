@@ -1,6 +1,7 @@
 package com.yaweb.rewardsengine.models.rewardable;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.yaweb.rewardsengine.interfaces.Action;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  */
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Bill {
+public class Bill implements Action {
   private int state;
   private long id;
   private long initiatorId;
@@ -36,5 +37,26 @@ public class Bill {
 
   public void setInitiatorId(long initiatorId) {
     this.initiatorId = initiatorId;
+  }
+
+  public String getType() {
+    return type;
+  }
+
+  public void setType(String type) {
+    this.type = type;
+  }
+
+  public int getState() {
+    return state;
+  }
+
+  public void setState(int state) {
+    this.state = state;
+  }
+
+  @Override
+  public String getActorMappingKey() {
+    return String.valueOf(getInitiatorId());
   }
 }
