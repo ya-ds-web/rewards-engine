@@ -1,19 +1,12 @@
 package com.yaweb.rewardsengine;
 
-import static com.yaweb.rewardsengine.exceptions.ExceptionMessagesStringsFormats.MESSAGE_TO_TABLECHANGE_DESERIALIZATION_EXCEPTION;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.mockito.ArgumentMatchers.any;
-
 import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.yaweb.rewardsengine.models.TableChange;
-import com.yaweb.rewardsengine.models.rewardable.Payment;
+import com.yaweb.rewardsengine.models.actions.Payment;
 import com.yaweb.rewardsengine.serialization.TableChangeDeserializer;
 import com.yaweb.rewardsengine.serialization.TableChangeSerializer;
-
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -24,6 +17,12 @@ import org.springframework.util.Assert;
 
 import java.io.IOException;
 import java.io.InputStream;
+
+import static com.yaweb.rewardsengine.exceptions.ExceptionMessagesStringsFormats.MESSAGE_TO_TABLECHANGE_DESERIALIZATION_EXCEPTION;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
 
 class TableChangesSerializationTests {
 

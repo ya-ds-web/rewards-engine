@@ -1,4 +1,4 @@
-package com.yaweb.rewardsengine.models.rewardable;
+package com.yaweb.rewardsengine.models.actions;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yaweb.rewardsengine.interfaces.Action;

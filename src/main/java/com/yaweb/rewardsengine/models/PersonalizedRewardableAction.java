@@ -11,19 +11,36 @@ import java.util.List;
  */
 
 public class PersonalizedRewardableAction {
+  private PersonalizedAction action;
+  private Campaign campaign;
+
+  public PersonalizedRewardableAction() {
+    super();
+  }
 
   public PersonalizedRewardableAction(PersonalizedAction action, Campaign campaign) {
     this.action = action;
     this.campaign = campaign;
   }
 
-  private final PersonalizedAction action;
-  private final Campaign campaign;
+  public PersonalizedAction getAction() {
+    return action;
+  }
+
+  public void setAction(PersonalizedAction action) {
+    this.action = action;
+  }
+
+  public Campaign getCampaign() {
+    return campaign;
+  }
+
+  public void setCampaign(Campaign campaign) {
+    this.campaign = campaign;
+  }
 
   public List<Reward> createRewards() {
-    return Collections.singletonList(new Reward() {
-      private static final int test = 1233333;
-    });
+    return Collections.singletonList(new CashReward("123", "ya@ya.ya", "USD", 10));
   }
 
 }

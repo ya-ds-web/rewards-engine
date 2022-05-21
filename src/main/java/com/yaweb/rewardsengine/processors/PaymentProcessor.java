@@ -3,13 +3,12 @@ package com.yaweb.rewardsengine.processors;
 import com.yaweb.rewardsengine.interfaces.Action;
 import com.yaweb.rewardsengine.interfaces.ActionsProcessor;
 import com.yaweb.rewardsengine.models.TableChange;
-import com.yaweb.rewardsengine.models.rewardable.Bill;
-import com.yaweb.rewardsengine.models.rewardable.Payment;
+import com.yaweb.rewardsengine.models.actions.Bill;
+import com.yaweb.rewardsengine.models.actions.Payment;
 import com.yaweb.rewardsengine.serialization.GenericObjectDeserializer;
 import com.yaweb.rewardsengine.serialization.GenericObjectSerializer;
 import com.yaweb.rewardsengine.serialization.TableChangeDeserializer;
 import com.yaweb.rewardsengine.serialization.TableChangeSerializer;
-
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.common.utils.Bytes;

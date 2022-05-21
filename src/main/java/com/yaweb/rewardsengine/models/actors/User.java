@@ -1,4 +1,4 @@
-package com.yaweb.rewardsengine.models.user;
+package com.yaweb.rewardsengine.models.actors;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.yaweb.rewardsengine.interfaces.Actor;

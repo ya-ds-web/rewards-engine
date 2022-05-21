@@ -8,12 +8,31 @@ import com.yaweb.rewardsengine.interfaces.Actor;
  */
 
 public class PersonalizedAction {
-  Action action;
-  Actor actor;
+  private Action action;
+  private Actor actor;
+
+  public PersonalizedAction() {
+    super();
+  }
 
   public PersonalizedAction(Action action, Actor actor) {
     this.action = action;
     this.actor = actor;
   }
 
+  public Action getAction() {
+    return action;
+  }
+
+  public void setAction(Action action) {
+    this.action = action;
+  }
+
+  public Actor getActor() {
+    return actor;
+  }
+
+  public void setActor(Actor actor) {
+    this.actor = actor;
+  }
 }
