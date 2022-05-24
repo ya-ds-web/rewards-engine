@@ -1,10 +1,10 @@
-package com.yaweb.rewardsengine;
+package com.yaweb.rewardsengine.serialization;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.yaweb.rewardsengine.models.actors.User;
-import com.yaweb.rewardsengine.serialization.GenericObjectDeserializer;
-import com.yaweb.rewardsengine.serialization.GenericObjectSerializer;
+import com.yaweb.rewardsengine.models.TableChange;
+import com.yaweb.rewardsengine.models.actions.Payment;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -16,52 +16,52 @@ import org.springframework.util.Assert;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static com.yaweb.rewardsengine.exceptions.ExceptionMessagesStringsFormats.MESSAGE_TO_OBJECT_DESERIALIZATION_EXCEPTION;
+import static com.yaweb.rewardsengine.exceptions.ExceptionMessagesStringsFormats.MESSAGE_TO_TABLECHANGE_DESERIALIZATION_EXCEPTION;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
 
-class GenericSerializationTests {
+class TableChangesSerializationTests {
 
   byte[] messageBytes;
 
-  GenericObjectDeserializer<User> deserializer = new GenericObjectDeserializer<>(User.class);
-  GenericObjectSerializer<User> serializer = new GenericObjectSerializer<>();
+  TableChangeDeserializer deserializer = new TableChangeDeserializer(Payment.class);
+  TableChangeSerializer serializer = new TableChangeSerializer();
 
   @BeforeEach
   void setUp() throws IOException {
-    InputStream is = getClass().getClassLoader().getResourceAsStream("UserMessageSampler.json");
+    InputStream is = getClass().getClassLoader().getResourceAsStream("PaymentsTableMessageSample.json");
     messageBytes = is.readAllBytes();
   }
 
   @Test
-  void serializationOfUserTest() {
-    var user = deserializer.deserialize("test", messageBytes);
-    var userSerialized = serializer.serialize("test", user);
-    var newUser = deserializer.deserialize("test", userSerialized);
-    assertEquals(newUser, user, "Deserialized message from file is not equal to "
+  void serializationOfPaymentsTableChangesTest() {
+    var paymentChange = deserializer.deserialize("test", messageBytes);
+    var paymentChangeSerialized = serializer.serialize("test", paymentChange);
+    var newPaymentsChange = deserializer.deserialize("test", paymentChangeSerialized);
+    assertEquals(newPaymentsChange, paymentChange, "Deserialized message from file is not equal to "
         + "deserialized"
         + "-> serialized -> deserialized message!");
   }
 
   @Test
   void deserializeNull() {
-    var user = deserializer.deserialize("test", null);
-    assertNull(user, "Deserialization of null should return null!");
+    var tableChange = deserializer.deserialize("test", null);
+    assertNull(tableChange, "Deserialization of null should return null!");
   }
 
   @Test
   void deserializationExceptionUnableToCreateObject() throws IOException {
-    var newDeserializer = new GenericObjectDeserializer<>(User.class);
+    var newDeserializer = new TableChangeDeserializer<>(Payment.class);
     var objectMapperMock = Mockito.mock(ObjectMapper.class);
-    Mockito.when(objectMapperMock.readValue(any(byte[].class), eq(User.class))).thenThrow(new IOException());
+    Mockito.when(objectMapperMock.readValue(any(byte[].class), any(JavaType.class))).thenThrow(new IOException());
     ReflectionTestUtils.setField(newDeserializer, "mapper", objectMapperMock);
     var thrown = Assertions.assertThrows(DeserializationException.class, () ->
         newDeserializer.deserialize("test", messageBytes));
     var expectedErrorMessage =
-        String.format(MESSAGE_TO_OBJECT_DESERIALIZATION_EXCEPTION, User.class.getName());
+        String.format(MESSAGE_TO_TABLECHANGE_DESERIALIZATION_EXCEPTION, "[simple type, class " +
+            Payment.class.getName() + "]");
     Assert.isTrue(thrown.getMessage()
             .contains(expectedErrorMessage)
         , "Incorrect exception was thrown for failed deserialization! \n  expected: " + expectedErrorMessage + "\n  "
@@ -70,12 +70,12 @@ class GenericSerializationTests {
 
   @Test
   void serializationExceptionUnableToParseObject() throws IOException {
-    var newSerializer = new GenericObjectSerializer<User>();
+    var newSerializer = new TableChangeSerializer<Payment>();
     var objectMapperMock = Mockito.mock(ObjectMapper.class);
-    Mockito.when(objectMapperMock.writeValueAsBytes(any(User.class))).thenThrow(
+    Mockito.when(objectMapperMock.writeValueAsBytes(any(TableChange.class))).thenThrow(
         JsonMappingException.fromUnexpectedIOE(new IOException())
     );
-    var dummyTableChange = new User("0", 0, false, null);
+    var dummyTableChange = new TableChange<Payment>(null, null, null, null);
     ReflectionTestUtils.setField(newSerializer, "mapper", objectMapperMock);
     var thrown = Assertions.assertThrows(RuntimeException.class, () ->
         newSerializer.serialize("test", dummyTableChange));

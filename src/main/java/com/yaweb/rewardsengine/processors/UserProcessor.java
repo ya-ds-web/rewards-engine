@@ -54,6 +54,6 @@ public class UserProcessor implements ActorsProcessor {
         .mapValues(TableChange::after)
         .groupBy((key, value) -> String.valueOf(value.id()), Grouped.with(Serdes.String(), userSerde))
         .reduce((value1, value2) -> value1.inserted() > value2.inserted() ? value1 : value2).mapValues(
-            (User value) -> ((Actor) value)).toStream().repartition(Repartitioned.with(Serdes.String(), actorSerde));
+            Actor.class::cast).toStream().repartition(Repartitioned.with(Serdes.String(), actorSerde));
   }
 }

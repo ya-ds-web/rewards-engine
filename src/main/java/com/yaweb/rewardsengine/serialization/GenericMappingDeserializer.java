@@ -8,9 +8,11 @@ import org.springframework.kafka.support.serializer.DeserializationException;
 import java.io.IOException;
 import java.util.Map;
 
-import static com.yaweb.rewardsengine.exceptions.ExceptionMessagesStringsFormats.MESSAGE_TO_TABLECHANGE_DESERIALIZATION_EXCEPTION;
+import static com.yaweb.rewardsengine.exceptions.ExceptionMessagesStringsFormats.MESSAGE_TO_OBJECT_DESERIALIZATION_EXCEPTION;
 
 public class GenericMappingDeserializer<T> implements Deserializer<T> {
+
+  private final ObjectMapper mapper = new ObjectMapper();
 
   final SimpleModule simpleModule = new SimpleModule();
   Class<T> mainClass;
@@ -30,12 +32,11 @@ public class GenericMappingDeserializer<T> implements Deserializer<T> {
       return null;
     }
     try {
-      ObjectMapper mapper = new ObjectMapper()
-          .registerModule(simpleModule);
+      mapper.registerModule(simpleModule);
       return mapper.readValue(data, mainClass);
     } catch (IOException e) {
       throw new DeserializationException(
-          String.format(MESSAGE_TO_TABLECHANGE_DESERIALIZATION_EXCEPTION,
+          String.format(MESSAGE_TO_OBJECT_DESERIALIZATION_EXCEPTION,
               mainClass),
           data, false, e);
     }

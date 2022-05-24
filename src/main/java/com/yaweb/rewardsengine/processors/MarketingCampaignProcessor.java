@@ -5,7 +5,6 @@ import com.yaweb.rewardsengine.interfaces.CampaignProcessor;
 import com.yaweb.rewardsengine.models.campaigns.MarketingCampaign;
 import com.yaweb.rewardsengine.serialization.GenericObjectDeserializer;
 import com.yaweb.rewardsengine.serialization.GenericObjectSerializer;
-
 import org.apache.kafka.common.serialization.Serde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -43,7 +42,7 @@ public class MarketingCampaignProcessor implements CampaignProcessor {
             Consumed.with(Serdes.String(), marketingCampaignSerde))
         .groupBy((key, value) -> String.valueOf(value.type()), Grouped.with(Serdes.String(), marketingCampaignSerde))
         .reduce((value1, value2) -> value1.lastChangeTimeInstance() > value2.lastChangeTimeInstance() ? value1 :
-            value2).mapValues((MarketingCampaign value) -> ((Campaign) value)).toStream().repartition(
+            value2).mapValues(Campaign.class::cast).toStream().repartition(
             Repartitioned.with(Serdes.String(), campaignSerde));
   }
 
